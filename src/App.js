@@ -39,9 +39,8 @@ class App extends React.Component {
             return ((num.toString().split('.').length) === 1 && 
             num.toString().match(/^[\-]?\d+$/)) ? (!isNaN(Number.parseInt(num))) : false ;
         }
-
-          console.log("splitExp[0]: " + splitExp[0]);
-          console.log("splitExp[1]: " + splitExp[1]);
+          // console.log("splitExp[0]: " + splitExp[0]);
+          // console.log("splitExp[1]: " + splitExp[1]);
 
           const oprand1 = (IsInteger(splitExp[0])) ? parseInt(splitExp[0]) : parseFloat(splitExp[0]);
           const operation = this.state.lastOp;
@@ -89,20 +88,38 @@ class App extends React.Component {
   handlePressDot = () => {
   
     var newScreenText = this.state.screenText;
-    if(!newScreenText.includes('.')){
+    
+    if(this.state.opCount === 0){   // for oprand 1.
 
-      if(newScreenText.length === 0)
-        newScreenText = "0.";
+      if(!newScreenText.includes(".")){
 
-      else{
+        if(newScreenText.length === 0)
+          newScreenText = "0.";
 
-        newScreenText += ".";
-        console.log(newScreenText);
+        else{
+
+          newScreenText += ".";
+          console.log(newScreenText);
+        }
       }
-
-      this.setState({screenText: newScreenText, lastOp: this.state.lastOp,
-         opCount: this.state.opCount});
     }
+
+    else{   // for second oprand.
+      const splitExp = newScreenText.split(this.state.lastOp);
+
+      if(!splitExp[1].includes(".")){
+
+        if(splitExp[1] === "")
+          splitExp[1] = "0.";
+        else
+          splitExp[1] += ".";
+      }
+      newScreenText = splitExp[0] + this.state.lastOp + splitExp[1];
+    }
+    
+    this.setState({screenText: newScreenText, lastOp: this.state.lastOp, 
+      opCount: this.state.opCount});
+
   };
 
   handlePressNegator = () => {
