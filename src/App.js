@@ -10,9 +10,15 @@ class App extends React.Component {
     this.state = {
       screenText: "",
       lastOp: '',
-      opCount: 0,
+      opCount: 0,      // add resultReady flag and handle the conditions.
     };
   }
+
+  IsInteger = (num) => {
+    return ((num.toString().split('.').length) === 1 && 
+    num.toString().match(/^[\-]?\d+$/)) ? (!isNaN(Number.parseInt(num))) : false ;
+  }
+
   handlePressDigit = (digit) => {
 
     var newScreenText = this.state.screenText;
@@ -35,16 +41,12 @@ class App extends React.Component {
           opCount = 1;
           const splitExp = newScreenText.split(/[+*/-]/g);  // can split using lastOp.
 
-          var IsInteger = function(num){
-            return ((num.toString().split('.').length) === 1 && 
-            num.toString().match(/^[\-]?\d+$/)) ? (!isNaN(Number.parseInt(num))) : false ;
-        }
           // console.log("splitExp[0]: " + splitExp[0]);
           // console.log("splitExp[1]: " + splitExp[1]);
 
-          const oprand1 = (IsInteger(splitExp[0])) ? parseInt(splitExp[0]) : parseFloat(splitExp[0]);
+          const oprand1 = (this.IsInteger(splitExp[0])) ? parseInt(splitExp[0]) : parseFloat(splitExp[0]);
           const operation = this.state.lastOp;
-          const oprand2 = (IsInteger(splitExp[1])) ? parseInt(splitExp[1]) : parseFloat(splitExp[1]);
+          const oprand2 = (this.IsInteger(splitExp[1])) ? parseInt(splitExp[1]) : parseFloat(splitExp[1]);
 
           console.log("op: " + operation);
           console.log("oprand1: " + oprand1);
@@ -82,7 +84,7 @@ class App extends React.Component {
   };
 
   handlePressAC = () => {
-    this.setState({screenText: ""});    // clear the screen for now.
+    this.setState({screenText: "",lastOp:'', opCount: 0, });    // clear the screen for now.
   };
 
   handlePressDot = () => {
@@ -128,9 +130,40 @@ class App extends React.Component {
   handlePressResult = () => {
 
     var newScreenText = this.state.screenText;
-    newScreenText += "=";
-    console.log(newScreenText);
-    this.setState({screenText: newScreenText});
+
+    if(this.state.opCount > 0){
+
+      const lastOp = this.state.lastOp;
+      const splitExp = newScreenText.split(lastOp);
+      const oprand1 = (this.IsInteger(splitExp[0])) ? parseInt(splitExp[0]) : parseFloat(splitExp[0]);
+      const oprand2 = (this.IsInteger(splitExp[1])) ? parseInt(splitExp[1]) : parseFloat(splitExp[1]);
+      newScreenText += "=";
+
+      switch(lastOp){
+
+        case '+':
+          newScreenText += (oprand1 + oprand2).toString()
+          break;
+
+        case '-':
+          newScreenText += (oprand1 - oprand2).toString()
+          break;
+
+        case '/':
+          newScreenText += (oprand1 / oprand2).toString()
+          break;
+
+        case '*':
+          newScreenText += (oprand1 * oprand2).toString()
+          break;
+
+        default:
+          console.log("default!");
+
+      }
+      console.log(newScreenText);
+      this.setState({screenText: newScreenText});
+  }
 
   };
   
