@@ -39,7 +39,7 @@ class App extends React.Component {
       opCount++;
         if(opCount === 2){
           opCount = 1;
-          const splitExp = newScreenText.split(/[+*/-]/g);  // can split using lastOp.
+          const splitExp = newScreenText.split(this.state.lastOp);  // can split using lastOp.
 
           // console.log("splitExp[0]: " + splitExp[0]);
           // console.log("splitExp[1]: " + splitExp[1]);
@@ -125,12 +125,46 @@ class App extends React.Component {
   };
 
   handlePressNegator = () => {
-    //var newScreenText = this.state.screenText;
+
+    var newScreenText = this.state.screenText;
+    var value;
+
+    if(newScreenText.length !== 0){  // may have problem with this condition.
+
+      const splitExp = newScreenText.split(this.state.lastOp);
+      console.log(splitExp[0]);
+      console.log(splitExp[1]);
+      console.log(this.state.lastOp);
+
+      if(this.state.opCount > 0){
+
+        value = (this.IsInteger(splitExp[1])) ? parseInt(splitExp[1]) : parseFloat(splitExp[1]);
+      
+      }
+
+      else{   // one number is on the screen.
+
+        value = (this.IsInteger(newScreenText)) ? parseInt(newScreenText) : parseFloat(newScreenText);
+        splitExp[0] = "";
+      }
+
+      if(!isNaN(value)){
+
+      value = -value;
+      newScreenText = splitExp[0] + this.state.lastOp + value.toString();
+
+      this.setState({screenText: newScreenText, lastOp: this.state.lastOp
+        , opCount: this.state.opCount})
+    }
+
+  }
+
   };
+
   handlePressResult = () => {
 
     var newScreenText = this.state.screenText;
-
+  
     if(this.state.opCount > 0){
 
       const lastOp = this.state.lastOp;
@@ -163,7 +197,7 @@ class App extends React.Component {
       }
       console.log(newScreenText);
       this.setState({screenText: newScreenText});
-  }
+    }
 
   };
   
