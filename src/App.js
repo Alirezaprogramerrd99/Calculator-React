@@ -23,18 +23,31 @@ class App extends React.Component {
   handlePressDigit = (digit) => {
 
     var newScreenText = this.state.screenText;
+
+    // if(!this.state.resultReady){
+    //   newScreenText += digit;
+    // }
+
+    // else{
+    //   newScreenText = "";
+    //   newScreenText += digit;
+    // }
+
+    newScreenText = (this.state.resultReady) ? (newScreenText = "") : (newScreenText);
     newScreenText += digit;
-    console.log(newScreenText)
-    this.setState({screenText: newScreenText})  // saveing value in state(updating the state.) 
+
+    this.setState({screenText: newScreenText, lastOp: this.state.lastOp,
+    opCount: this.state.opCount, resultReady: false})  // saveing value in state(updating the state.) 
     
   };
   handlePressOperator = (operator) => {
 
     var newScreenText = this.state.screenText;
     var opCount = this.state.opCount;
-    const ch = newScreenText.charAt(newScreenText.length - 1)
-    
 
+    console.log(newScreenText.length);
+    const ch = newScreenText.charAt(newScreenText.length - 1);
+    
     if((function (ch){ return !isNaN( parseInt(ch));})(ch)){
 
       opCount++;
@@ -92,20 +105,22 @@ class App extends React.Component {
   handlePressDot = () => {
   
     var newScreenText = this.state.screenText;
+    console.log(this.state.resultReady);
+    console.log(this.state.opCount);
     
     if(this.state.opCount === 0){   // for oprand 1.
 
-      if(!newScreenText.includes(".")){
+      // if(!newScreenText.includes(".")){
 
-        if(newScreenText.length === 0)
+        if(newScreenText.length === 0 || this.state.resultReady)
           newScreenText = "0.";
 
         else{
-
-          newScreenText += ".";
+          
+          if(!newScreenText.includes("."))
+            newScreenText += ".";
           console.log(newScreenText);
         }
-      }
     }
 
     else{   // for second oprand.
@@ -122,7 +137,7 @@ class App extends React.Component {
     }
     
     this.setState({screenText: newScreenText, lastOp: this.state.lastOp, 
-      opCount: this.state.opCount, resultReady: this.state.resultReady,});
+      opCount: this.state.opCount, resultReady: false,});
 
   };
 
@@ -134,9 +149,10 @@ class App extends React.Component {
     if(newScreenText.length !== 0){  // may have problem with this condition.
 
       const splitExp = newScreenText.split(this.state.lastOp);
-      console.log(splitExp[0]);
-      console.log(splitExp[1]);
-      console.log(this.state.lastOp);
+
+      // console.log(splitExp[0]);
+      // console.log(splitExp[1]);
+      // console.log(this.state.lastOp);
 
       if(this.state.opCount > 0){
 
@@ -178,19 +194,19 @@ class App extends React.Component {
       switch(lastOp){
 
         case '+':
-          newScreenText += (oprand1 + oprand2).toString()
+          newScreenText = (oprand1 + oprand2).toString()
           break;
 
         case '-':
-          newScreenText += (oprand1 - oprand2).toString()
+          newScreenText = (oprand1 - oprand2).toString()
           break;
 
         case '/':
-          newScreenText += (oprand1 / oprand2).toString()
+          newScreenText = (oprand1 / oprand2).toString()
           break;
 
         case '*':
-          newScreenText += (oprand1 * oprand2).toString()
+          newScreenText = (oprand1 * oprand2).toString()
           break;
 
         default:
@@ -199,8 +215,8 @@ class App extends React.Component {
       }
       console.log(newScreenText);
       
-      this.setState({screenText: newScreenText, lastOp: this.state.lastOp, 
-      opCount:this.state.opCount, resultReady: true, });
+      this.setState({screenText: newScreenText, lastOp: '', 
+      opCount:0, resultReady: true, });
 
     }
   };
