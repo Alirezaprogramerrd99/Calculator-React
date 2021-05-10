@@ -11,6 +11,7 @@ class App extends React.Component {
       screenText: "",
       lastOp: '',
       opCount: 0,      // add resultReady flag and handle the conditions.
+      resultReady: false,
     };
   }
 
@@ -78,13 +79,14 @@ class App extends React.Component {
 
         newScreenText += operator;
         console.log(newScreenText);
-        this.setState({screenText: newScreenText, lastOp: operator, opCount: opCount,});
+        this.setState({screenText: newScreenText, lastOp: operator, 
+          opCount: opCount, resultReady: false});
     }
 
   };
 
   handlePressAC = () => {
-    this.setState({screenText: "",lastOp:'', opCount: 0, });    // clear the screen for now.
+    this.setState({screenText: "",lastOp:'', opCount: 0, resultReady: false });    // clear the screen for now.
   };
 
   handlePressDot = () => {
@@ -120,7 +122,7 @@ class App extends React.Component {
     }
     
     this.setState({screenText: newScreenText, lastOp: this.state.lastOp, 
-      opCount: this.state.opCount});
+      opCount: this.state.opCount, resultReady: this.state.resultReady,});
 
   };
 
@@ -144,17 +146,17 @@ class App extends React.Component {
 
       else{   // one number is on the screen.
 
-        value = (this.IsInteger(newScreenText)) ? parseInt(newScreenText) : parseFloat(newScreenText);
+        value = (this.IsInteger(splitExp[0])) ? parseInt(newScreenText) : parseFloat(newScreenText);
         splitExp[0] = "";
       }
 
       if(!isNaN(value)){
 
-      value = -value;
-      newScreenText = splitExp[0] + this.state.lastOp + value.toString();
+        value = -value;
+        newScreenText = splitExp[0] + this.state.lastOp + value.toString();
 
-      this.setState({screenText: newScreenText, lastOp: this.state.lastOp
-        , opCount: this.state.opCount})
+        this.setState({screenText: newScreenText, lastOp: this.state.lastOp
+          , opCount: this.state.opCount})
     }
 
   }
@@ -171,7 +173,7 @@ class App extends React.Component {
       const splitExp = newScreenText.split(lastOp);
       const oprand1 = (this.IsInteger(splitExp[0])) ? parseInt(splitExp[0]) : parseFloat(splitExp[0]);
       const oprand2 = (this.IsInteger(splitExp[1])) ? parseInt(splitExp[1]) : parseFloat(splitExp[1]);
-      newScreenText += "=";
+      newScreenText = (!this.state.resultReady) ? (newScreenText + "=") : newScreenText;
 
       switch(lastOp){
 
@@ -196,9 +198,11 @@ class App extends React.Component {
 
       }
       console.log(newScreenText);
-      this.setState({screenText: newScreenText});
-    }
+      
+      this.setState({screenText: newScreenText, lastOp: this.state.lastOp, 
+      opCount:this.state.opCount, resultReady: true, });
 
+    }
   };
   
   render() {
