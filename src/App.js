@@ -10,9 +10,10 @@ class App extends React.Component {
     this.state = {
       screenText: "",
       lastOp: '',
-      opCount: 0,      // add resultReady flag and handle the conditions.
+      opCount: 0,      
       resultReady: false,
-      memoryList : [],
+      memoryList: [],
+      memoryMode: false, 
     };
   }
 
@@ -25,20 +26,13 @@ class App extends React.Component {
 
     var newScreenText = this.state.screenText;
 
-    // if(!this.state.resultReady){
-    //   newScreenText += digit;
-    // }
+    newScreenText = (this.state.resultReady || (this.state.memoryMode && this.state.opCount === 0)) ? 
+    (newScreenText = "") : (newScreenText);
 
-    // else{
-    //   newScreenText = "";
-    //   newScreenText += digit;
-    // }
-
-    newScreenText = (this.state.resultReady) ? (newScreenText = "") : (newScreenText);
     newScreenText += digit;
 
     this.setState({screenText: newScreenText, lastOp: this.state.lastOp,
-    opCount: this.state.opCount, resultReady: false})  // saveing value in state(updating the state.) 
+    opCount: this.state.opCount, resultReady: false, memoryMode: false})  // saveing value in state(updating the state.) 
     
   };
   handlePressOperator = (operator) => {
@@ -138,7 +132,7 @@ class App extends React.Component {
     }
     
     this.setState({screenText: newScreenText, lastOp: this.state.lastOp, 
-      opCount: this.state.opCount, resultReady: false,});
+      opCount: this.state.opCount, resultReady: false, memoryMode: false});
 
   };
 
@@ -150,10 +144,6 @@ class App extends React.Component {
     if(newScreenText.length !== 0){  // may have problem with this condition.
 
       const splitExp = newScreenText.split(this.state.lastOp);
-
-      // console.log(splitExp[0]);
-      // console.log(splitExp[1]);
-      // console.log(this.state.lastOp);
 
       if(this.state.opCount > 0){
 
@@ -229,6 +219,17 @@ class App extends React.Component {
 
   handlePressMR = () => {
 
+    if(this.state.memoryList.length > 0){
+
+      var memRead = this.state.memoryList[0].toString();
+      var newScreenText = this.state.screenText;
+
+      const splitExp = newScreenText.split(this.state.lastOp);
+      newScreenText = (this.state.opCount > 0) ? (splitExp[0] + this.state.lastOp + memRead) 
+      : (memRead);
+
+      this.setState({screenText: newScreenText, memoryMode: true});
+    }
   };
   
   handlePressMPlus = () => {
@@ -240,28 +241,32 @@ class App extends React.Component {
   };
 
   handlePressMS = () => {
-
+    
     var screenText = this.state.screenText;
     var value, numVal;
 
     if(screenText.length !== 0){  // may have problem with this condition.
 
-      const splitExp = screenText.split(this.state.lastOp);
-
-      if(this.state.opCount > 0)
-        value = splitExp[1];
+      if(this.state.opCount > 0){
+        const splitExp = screenText.split(this.state.lastOp);
+        // check if splitExp[1] is undef -> exp: 12 +   -> ms called from user.
+        console.log(splitExp);
+        value = (splitExp[1] === "") ? splitExp[0] : splitExp[1];
+      }
       
       else{   // one number is on the screen.
-        value = splitExp[0];
+        value = screenText;
       }
 
       numVal = (this.IsInteger(value)) ? parseInt(value) : parseFloat(value);
+      // console.log("numval is: " + numVal);
 
       this.setState(state => {
-        const memoryList = [...state.memoryList, numVal];
-        return {memoryList, };
-      });
+        const memoryList = [numVal, ...state.memoryList];
+        const memoryMode = true;
 
+        return {memoryList, memoryMode};
+      });
     }
   };
 
