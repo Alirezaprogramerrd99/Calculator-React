@@ -12,13 +12,14 @@ class App extends React.Component {
       lastOp: '',
       opCount: 0,      // add resultReady flag and handle the conditions.
       resultReady: false,
+      memoryList : [],
     };
   }
 
   IsInteger = (num) => {
     return ((num.toString().split('.').length) === 1 && 
     num.toString().match(/^[\-]?\d+$/)) ? (!isNaN(Number.parseInt(num))) : false ;
-  }
+  };
 
   handlePressDigit = (digit) => {
 
@@ -220,7 +221,50 @@ class App extends React.Component {
 
     }
   };
+
+  handlePressMC = () => {
+
+    this.setState({memoryList: []});
+  };
+
+  handlePressMR = () => {
+
+  };
   
+  handlePressMPlus = () => {
+
+  };
+
+  handlePressMMinus = () => {
+
+  };
+
+  handlePressMS = () => {
+
+    var screenText = this.state.screenText;
+    var value, numVal;
+
+    if(screenText.length !== 0){  // may have problem with this condition.
+
+      const splitExp = screenText.split(this.state.lastOp);
+
+      if(this.state.opCount > 0)
+        value = splitExp[1];
+      
+      else{   // one number is on the screen.
+        value = splitExp[0];
+      }
+
+      numVal = (this.IsInteger(value)) ? parseInt(value) : parseFloat(value);
+
+      this.setState(state => {
+        const memoryList = [...state.memoryList, numVal];
+        return {memoryList, };
+      });
+
+    }
+  };
+
   render() {
     return (
       <div>
@@ -232,6 +276,11 @@ class App extends React.Component {
           onPressDot={this.handlePressDot}
           onPressNegator={this.handlePressNegator}
           onPressResult={this.handlePressResult}
+          onPressMC={this.handlePressMC}
+          onPressMR={this.handlePressMR}
+          onPressMPlus={this.handlePressMPlus}
+          onPressMMinus={this.handlePressMMinus}
+          onPressMS={this.handlePressMS}
         />
       </div>
     );
