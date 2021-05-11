@@ -233,6 +233,32 @@ class App extends React.Component {
   };
   
   handlePressMPlus = () => {
+    
+    // must add if for 2 cases... 
+    var screenVal = (this.IsInteger(this.state.screenText)) ? parseInt(this.state.screenText) : parseFloat(this.state.screenText);
+    
+    if(this.state.memoryList.length > 0){
+  
+    this.setState(state => {
+
+      const memoryList = state.memoryList.map((number, j) => {
+
+        if (j === 0) {
+          return screenVal + number;
+
+        } else {
+          return number;
+        }
+      });
+      const memoryMode = true;
+
+      return {memoryList, memoryMode};
+    });
+  }
+
+  else{
+    this.handlePressMS();
+  }
 
   };
 
