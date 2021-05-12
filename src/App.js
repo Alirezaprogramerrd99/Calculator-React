@@ -164,8 +164,8 @@ class App extends React.Component {
   handlePressDot = () => {
   
     var newScreenText = this.state.screenText;
-    console.log(this.state.resultReady);
-    console.log(this.state.opCount);
+    // console.log(this.state.resultReady);
+    // console.log(this.state.opCount);
     
     if(this.state.opCount === 0){   // for oprand 1.
 
@@ -183,6 +183,11 @@ class App extends React.Component {
     else{   // for second oprand.
       const splitExp = newScreenText.split(this.state.lastOp);
 
+      if(this.state.screenText.charAt(0) === '-' && this.state.lastOp === '-'){
+        splitExp[0] = "-" + splitExp[1];
+        splitExp[1] = splitExp[2];
+    }
+    
       if(!splitExp[1].includes(".")){
 
         if(splitExp[1] === "")
