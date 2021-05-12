@@ -22,6 +22,33 @@ class App extends React.Component {
     num.toString().match(/^[\-]?\d+$/)) ? (!isNaN(Number.parseInt(num))) : false ;
   };
 
+  updateMemList = (op, val) =>{
+
+      // must add if for 2 cases... 
+    if(this.state.memoryList.length > 0){
+      
+      this.setState(state => {
+    
+        const memoryList = state.memoryList.map((number, j) => {
+    
+          if (j === 0) {
+            return (op === '+') ?  number + val : number - val;
+    
+          } else {
+            return number;
+          }
+        });
+        const memoryMode = true;
+    
+        return {memoryList, memoryMode};
+      });
+    }
+    
+    else{
+      this.handlePressMS();
+    }
+ };
+
   handlePressDigit = (digit) => {
 
     var newScreenText = this.state.screenText;
@@ -39,13 +66,15 @@ class App extends React.Component {
 
     var newScreenText = this.state.screenText;
     var opCount = this.state.opCount;
+    var lastOp;
 
     console.log(newScreenText.length);
     const ch = newScreenText.charAt(newScreenText.length - 1);
     
     if((function (ch){ return !isNaN( parseInt(ch));})(ch)){
 
-      opCount++;
+      if(operator !== "%"){
+        opCount++;
         if(opCount === 2){
           opCount = 1;
           const splitExp = newScreenText.split(this.state.lastOp);  // can split using lastOp.
@@ -60,7 +89,7 @@ class App extends React.Component {
           console.log("op: " + operation);
           console.log("oprand1: " + oprand1);
           console.log("oprand2: " + oprand2);
-      
+
           switch(operation){
 
               case '+':
@@ -86,10 +115,32 @@ class App extends React.Component {
         }
 
         newScreenText += operator;
+        lastOp = operator;
         console.log(newScreenText);
-        this.setState({screenText: newScreenText, lastOp: operator, 
-          opCount: opCount, resultReady: false});
+
     }
+
+    else{
+
+      if(this.state.opCount > 0){
+        const splitExp = newScreenText.split(this.state.lastOp);
+        const oprand1 = (this.IsInteger(splitExp[0])) ? parseInt(splitExp[0]) : parseFloat(splitExp[0]);
+        const oprand2 = (this.IsInteger(splitExp[1])) ? parseInt(splitExp[1]) : parseFloat(splitExp[1]);
+        const product = (oprand1 * oprand2) / 100; 
+        newScreenText = splitExp[0] + this.state.lastOp + product.toString();
+      }
+
+      else
+        newScreenText = "0";
+
+    lastOp = this.state.lastOp;
+
+    }
+
+    this.setState({screenText: newScreenText, lastOp: lastOp, 
+      opCount: opCount, resultReady: false});
+
+  }
 
   };
 
@@ -104,8 +155,6 @@ class App extends React.Component {
     console.log(this.state.opCount);
     
     if(this.state.opCount === 0){   // for oprand 1.
-
-      // if(!newScreenText.includes(".")){
 
         if(newScreenText.length === 0 || this.state.resultReady)
           newScreenText = "0.";
@@ -178,38 +227,42 @@ class App extends React.Component {
 
       const lastOp = this.state.lastOp;
       const splitExp = newScreenText.split(lastOp);
-      const oprand1 = (this.IsInteger(splitExp[0])) ? parseInt(splitExp[0]) : parseFloat(splitExp[0]);
-      const oprand2 = (this.IsInteger(splitExp[1])) ? parseInt(splitExp[1]) : parseFloat(splitExp[1]);
-      newScreenText = (!this.state.resultReady) ? (newScreenText + "=") : newScreenText;
 
-      switch(lastOp){
+      if(splitExp[1] !== ""){
 
-        case '+':
-          newScreenText = (oprand1 + oprand2).toString()
-          break;
+        const oprand1 = (this.IsInteger(splitExp[0])) ? parseInt(splitExp[0]) : parseFloat(splitExp[0]);
+        const oprand2 = (this.IsInteger(splitExp[1])) ? parseInt(splitExp[1]) : parseFloat(splitExp[1]);
+        newScreenText = (!this.state.resultReady) ? (newScreenText + "=") : newScreenText;
 
-        case '-':
-          newScreenText = (oprand1 - oprand2).toString()
-          break;
+        switch(lastOp){
 
-        case '/':
-          newScreenText = (oprand1 / oprand2).toString()
-          break;
+          case '+':
+            newScreenText = (oprand1 + oprand2).toString()
+            break;
 
-        case '*':
-          newScreenText = (oprand1 * oprand2).toString()
-          break;
+          case '-':
+            newScreenText = (oprand1 - oprand2).toString()
+            break;
 
-        default:
-          console.log("default!");
+          case '/':
+            newScreenText = (oprand1 / oprand2).toString()
+            break;
 
-      }
-      console.log(newScreenText);
-      
-      this.setState({screenText: newScreenText, lastOp: '', 
-      opCount:0, resultReady: true, });
+          case '*':
+            newScreenText = (oprand1 * oprand2).toString()
+            break;
+
+          default:
+            console.log("default!");
+
+        }
+        console.log(newScreenText);
+        
+        this.setState({screenText: newScreenText, lastOp: '', 
+        opCount:0, resultReady: true, });
 
     }
+  }
   };
 
   handlePressMC = () => {
@@ -233,37 +286,34 @@ class App extends React.Component {
   };
   
   handlePressMPlus = () => {
-    
-    // must add if for 2 cases... 
-    var screenVal = (this.IsInteger(this.state.screenText)) ? parseInt(this.state.screenText) : parseFloat(this.state.screenText);
-    
-    if(this.state.memoryList.length > 0){
-  
-    this.setState(state => {
 
-      const memoryList = state.memoryList.map((number, j) => {
+    var value = this.state.screenText;
 
-        if (j === 0) {
-          return screenVal + number;
+    if(this.state.opCount > 0){
 
-        } else {
-          return number;
-        }
-      });
-      const memoryMode = true;
+      var screenText = this.state.screenText;
+      const splitExp =  screenText.split(this.state.lastOp);
+      value = (splitExp[1] === "") ? splitExp[0] : splitExp[1];
 
-      return {memoryList, memoryMode};
-    });
-  }
+    }
 
-  else{
-    this.handlePressMS();
-  }
-
+    var screenVal = (this.IsInteger(value)) ? parseInt(value) : parseFloat(value);
+    this.updateMemList('+', screenVal);
   };
 
   handlePressMMinus = () => {
 
+    var value = this.state.screenText;
+
+    if(this.state.opCount > 0){
+
+      var screenText = this.state.screenText;
+      const splitExp =  screenText.split(this.state.lastOp);
+      value = (splitExp[1] === "") ? splitExp[0] : splitExp[1];
+    }
+
+    var screenVal = (this.IsInteger(value)) ? parseInt(value) : parseFloat(value);
+    this.updateMemList('-', screenVal);
   };
 
   handlePressMS = () => {
