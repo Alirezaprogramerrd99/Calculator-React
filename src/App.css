@@ -26,6 +26,18 @@
   background-color: #1b8bec;
 }
 
+.key.keyMems{
+  font-size: 15px;
+  background-color: #75e728;
+  height: 65px;
+  width: 80px;
+}
+
+.key.key.keyMems:hover {
+  
+  background-color: #59b11f;
+}
+
 .screen {
   height: 100px;
   width: 400px;

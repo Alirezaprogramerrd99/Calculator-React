@@ -1,8 +1,8 @@
-const Key = ({ onClick, text, wide, blue }) => {
+const Key = ({ onClick, text, keyMems, wide, blue }) => {
   return (
     <button
       onClick={onClick}
-      className={["key", wide && "wide", blue && "blue"].join(" ")}
+      className={["key", keyMems && "keyMems", wide && "wide", blue && "blue"].join(" ")}
     >
       {text}
     </button>

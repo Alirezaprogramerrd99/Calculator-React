@@ -123,10 +123,13 @@ class App extends React.Component {
     else{
 
       if(this.state.opCount > 0){
+        
         const splitExp = newScreenText.split(this.state.lastOp);
         const oprand1 = (this.IsInteger(splitExp[0])) ? parseInt(splitExp[0]) : parseFloat(splitExp[0]);
         const oprand2 = (this.IsInteger(splitExp[1])) ? parseInt(splitExp[1]) : parseFloat(splitExp[1]);
-        const product = (oprand1 * oprand2) / 100; 
+
+        const product = (this.state.lastOp === '*' || this.state.lastOp === '/') ? oprand2 / 100 
+        : (oprand1 * oprand2) / 100;
         newScreenText = splitExp[0] + this.state.lastOp + product.toString();
       }
 

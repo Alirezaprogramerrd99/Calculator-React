@@ -16,11 +16,11 @@ const Keypad = ({
   return (
     <>
       <div>
-        <Key text={"MC"} onClick={onPressMC} />
-        <Key text={"MR"} onClick={onPressMR} />
-        <Key text={"M+"} onClick={onPressMPlus} />
-        <Key text={"M-"} onClick={onPressMMinus} />
-        <Key text={"MS"} onClick={onPressMS} />
+        <Key text={"MC"} keyMems onClick={onPressMC} />
+        <Key text={"MR"} keyMems onClick={onPressMR} />
+        <Key text={"M+"} keyMems onClick={onPressMPlus} />
+        <Key text={"M-"} keyMems onClick={onPressMMinus} />
+        <Key text={"MS"} keyMems onClick={onPressMS} />
       </div>
 
       <div>
