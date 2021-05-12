@@ -19,8 +19,13 @@ class App extends React.Component {
 
   IsInteger = (num) => {
     return ((num.toString().split('.').length) === 1 && 
-    num.toString().match(/^[\-]?\d+$/)) ? (!isNaN(Number.parseInt(num))) : false ;
+    num.toString().match(/^[-]?\d+$/)) ? (!isNaN(Number.parseInt(num))) : false ;
   };
+
+  positiveMaker = () => {
+    var newScreenText = this.state.screenText;
+    return (newScreenText.includes("--")) ? newScreenText.replace("--", "+") : newScreenText;
+  }
 
   updateMemList = (op, val) =>{
 
@@ -48,6 +53,7 @@ class App extends React.Component {
       this.handlePressMS();
     }
  };
+
 
   handlePressDigit = (digit) => {
 
@@ -77,13 +83,17 @@ class App extends React.Component {
         opCount++;
         if(opCount === 2){
           opCount = 1;
-          const splitExp = newScreenText.split(this.state.lastOp);  // can split using lastOp.
 
-          // console.log("splitExp[0]: " + splitExp[0]);
-          // console.log("splitExp[1]: " + splitExp[1]);
+          const operation = (this.state.screenText.includes("--")) ? '+' : this.state.lastOp;
+          newScreenText = this.positiveMaker();
+          const splitExp = newScreenText.split(operation);  // can split using lastOp.
+
+          if(this.state.screenText.charAt(0) === '-' && operation === '-'){
+            splitExp[0] = "-" + splitExp[1];
+            splitExp[1] = splitExp[2];
+          }
 
           const oprand1 = (this.IsInteger(splitExp[0])) ? parseInt(splitExp[0]) : parseFloat(splitExp[0]);
-          const operation = this.state.lastOp;
           const oprand2 = (this.IsInteger(splitExp[1])) ? parseInt(splitExp[1]) : parseFloat(splitExp[1]);
 
           console.log("op: " + operation);
@@ -123,7 +133,7 @@ class App extends React.Component {
     else{
 
       if(this.state.opCount > 0){
-        
+
         const splitExp = newScreenText.split(this.state.lastOp);
         const oprand1 = (this.IsInteger(splitExp[0])) ? parseInt(splitExp[0]) : parseFloat(splitExp[0]);
         const oprand2 = (this.IsInteger(splitExp[1])) ? parseInt(splitExp[1]) : parseFloat(splitExp[1]);
@@ -196,6 +206,12 @@ class App extends React.Component {
     if(newScreenText.length !== 0){  // may have problem with this condition.
 
       const splitExp = newScreenText.split(this.state.lastOp);
+      console.log(splitExp);
+
+      if(this.state.screenText.charAt(0) === '-' && this.state.lastOp === '-'){
+        splitExp[0] = "-" + splitExp[1];
+        splitExp[1] = splitExp[2];
+    }
 
       if(this.state.opCount > 0){
 
@@ -205,7 +221,7 @@ class App extends React.Component {
 
       else{   // one number is on the screen.
 
-        value = (this.IsInteger(splitExp[0])) ? parseInt(newScreenText) : parseFloat(newScreenText);
+        value = (this.IsInteger(newScreenText)) ? parseInt(newScreenText) : parseFloat(newScreenText);
         splitExp[0] = "";
       }
 
@@ -224,12 +240,18 @@ class App extends React.Component {
 
   handlePressResult = () => {
 
-    var newScreenText = this.state.screenText;
+    var newScreenText;
   
     if(this.state.opCount > 0){
 
-      const lastOp = this.state.lastOp;
+      var lastOp = (this.state.screenText.includes("--")) ? '+' : this.state.lastOp;
+      newScreenText = this.positiveMaker();
       const splitExp = newScreenText.split(lastOp);
+
+      if(this.state.screenText.charAt(0) === '-' && lastOp === '-'){
+          splitExp[0] = "-" + splitExp[1];
+          splitExp[1] = splitExp[2];
+      }
 
       if(splitExp[1] !== ""){
 
