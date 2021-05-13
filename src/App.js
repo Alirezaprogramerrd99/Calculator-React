@@ -206,12 +206,18 @@ class App extends React.Component {
   handlePressNegator = () => {
 
     var newScreenText = this.state.screenText;
+    var f = false;
     var value;
 
     if(newScreenText.length !== 0){  // may have problem with this condition.
 
       const splitExp = newScreenText.split(this.state.lastOp);
       console.log(splitExp);
+
+      if(newScreenText.includes("--")){
+        splitExp[1] = "-" + splitExp[2];
+        f = true;
+      }
 
       if(this.state.screenText.charAt(0) === '-' && this.state.lastOp === '-'){
         splitExp[0] = "-" + splitExp[1];
